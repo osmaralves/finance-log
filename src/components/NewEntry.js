@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { store } from '../services/firebase'
+
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -47,13 +49,44 @@ class NewEntry extends Component {
       tags: this.state.tags
     });
   };
-  
+
+  handleSubmit = event => {
+    event.preventDefault();
+
+    const finances = store.collection('finances');
+
+    let dateParts = this.state.date.split('-');
+    let date = new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
+
+    let value = parseInt(this.state.value*100);
+
+    finances.add({
+      date: date,
+      value: value,
+      description: this.state.description,
+      tags: this.state.tags,
+    })
+    .then(docRef => {
+      console.log("Entry create with ID: ", docRef.id);
+
+      this.setState({
+        date: '',
+        value: '',
+        description: '',
+        tags: [],
+      });
+    })
+    .catch(error => {
+      console.error("Error adding entry: ", error);
+    });
+  };
+
   render() {
     const { classes } = this.props;
 
     return (
       <Card>
-        <form>
+        <form onSubmit={this.handleSubmit}>
           <CardContent>
             <Typography variant="h6" component="h1">Nova Transação</Typography>
           </CardContent>
@@ -97,7 +130,7 @@ class NewEntry extends Component {
             />
           </CardContent>
           <CardActions>
-            <Button size="small" color="primary">Adicionar</Button>
+            <Button type="submit" size="small" color="primary">Adicionar</Button>
           </CardActions>
         </form>
       </Card>
