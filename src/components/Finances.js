@@ -48,11 +48,12 @@ class Finances extends Component {
   componentDidMount() {
     const finances = store.collection('finances');
 
-    finances.orderBy('date', 'asc').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        this.pushEntry(doc);
+    finances
+      .orderBy('date', 'asc')
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => this.pushEntry(doc));
       });
-    });
   };
 
   pushEntry(doc) {
@@ -82,6 +83,22 @@ class Finances extends Component {
     return value < 0
       ? (<span style={{ color: 'red' }}>{formated}</span>)
       : (<span>{formated}</span>);
+  };
+
+  handleClickTag(tag) {
+    this.setState({
+      entries: [],
+    });
+
+    const finances = store.collection('finances');
+
+    finances
+      .where('tags', 'array-contains', tag)
+      .orderBy('date', 'asc')
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => this.pushEntry(doc));
+      });
   };
 
   render() {
@@ -119,7 +136,12 @@ class Finances extends Component {
                   <TableCell>
                     {entry.tags.map((tag, index) => {
                       return (
-                        <Chip label={tag} key={index} className={classes.chip} />
+                        <Chip
+                          key={index}
+                          label={tag}
+                          className={classes.chip}
+                          onClick={() => this.handleClickTag(tag)}
+                        />
                       )
                     })}
                   </TableCell>
