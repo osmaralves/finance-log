@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import NewEntry from './components/NewEntry';
+import Finances from './components/Finances';
 
 import './App.css';
 
@@ -16,6 +17,8 @@ class App extends Component {
       <MuiThemeProvider theme={theme}>
         <div className="App">
           <NewEntry />
+
+          <Finances />
         </div>
       </MuiThemeProvider>
     );
